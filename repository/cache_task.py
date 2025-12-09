@@ -12,9 +12,9 @@ class TaskCache:
             task_json = redis.lrange("tasks", 0, -1)
             return [
                 TasksRetrieveSchema.model_validate_json(task.decode("utf-8"))
-                for task in task_json
+                for task in task_json # type: ignore
             ]
-
+ 
     def set_tasks(self, tasks: list[TasksBaseSchema]):
         tasks_json = [task.model_dump_json() for task in tasks]
         with self.redis as redis:
