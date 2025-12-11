@@ -1,4 +1,5 @@
 from typing import Any
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
@@ -16,6 +17,7 @@ class TasksModel(Base):
     name: Mapped[str]
     pomodoro_count: Mapped[int]
     category_id: Mapped[int]
+    user_id: Mapped[int] = mapped_column(ForeignKey("UserProfiles.id"), nullable=False)
 
 
 class CategoriesModel(Base):

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from dependency import get_user_service
+from dependency import get_request_user_id, get_user_service
 from exceptions import UserAlreadyExistsException
 from schema.user import UserCreateSchema, UserLoginSchema
 from service.user import UserService

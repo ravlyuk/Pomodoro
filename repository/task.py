@@ -1,8 +1,9 @@
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
-from database import TasksModel, CategoriesModel, get_db_session
-from schema.task import TasksBaseSchema, TasksRetrieveSchema
+
+from models import TasksModel, CategoriesModel
+from schema import TasksCreateSchema
 
 
 class TaskRepository:
@@ -22,11 +23,12 @@ class TaskRepository:
             task = session.execute(query).scalar_one_or_none()
         return task
 
-    def create_task(self, task: TasksBaseSchema) -> TasksModel:
+    def create_task(self, task: TasksCreateSchema, user_id: int) -> TasksModel:
         new_task = TasksModel(
             name=task.name,
             pomodoro_count=task.pomodoro_count,
             category_id=task.category_id,
+            user_id=user_id,
         )
         with self.db_session as session:
             session.add(new_task)
@@ -34,8 +36,10 @@ class TaskRepository:
             session.refresh(new_task)
             return new_task
 
-    def delete_task(self, task_id: int) -> None:
-        query = delete(TasksModel).where(TasksModel.id == task_id)
+    def delete_task(self, task_id: int, user_id: int) -> None:
+        query = delete(TasksModel).where(
+            TasksModel.id == task_id, TasksModel.user_id == user_id
+        )
         with self.db_session as session:
             session.execute(query)
             session.commit()
@@ -55,7 +59,18 @@ class TaskRepository:
             update(TasksModel)
             .where(TasksModel.id == task_id)
             .values(name=new_name)
-            .returning(TasksModel)
+            .returning(TasksModel.id)
         )
         with self.db_session as session:
-            return session.execute(query).scalar_one_or_none()
+            task_id_: int = session.execute(query).scalar_one_or_none()
+            session.commit()
+            session.flush()
+            return self.get_task_by_id(task_id_)
+
+    def get_user_task(self, user_id: int, task_id: int) -> TasksModel | None:
+        query = select(TasksModel).where(
+            TasksModel.id == task_id, TasksModel.user_id == user_id
+        )
+        with self.db_session as session:
+            task = session.execute(query).scalar_one_or_none()
+        return task
