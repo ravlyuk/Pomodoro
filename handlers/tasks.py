@@ -15,7 +15,7 @@ router = APIRouter(prefix="/tasks", tags=["Tasks"])
 async def get_tasks(
     task_service: Annotated[TaskService, Depends(get_task_service)],
 ):
-    return task_service.get_tasks()
+    return await task_service.get_tasks()
 
 
 @router.post("/")
@@ -24,7 +24,7 @@ async def create_task(
     task_service: Annotated[TaskService, Depends(get_task_service)],
     user_id: int = Depends(get_request_user_id),
 ) -> TasksRetrieveSchema:
-    task = task_service.create_task(body, user_id)
+    task = await task_service.create_task(body, user_id)
     return task
 
 
@@ -36,7 +36,7 @@ async def path_task(
     user_id: int = Depends(get_request_user_id),
 ) -> TasksRetrieveSchema | None:
     try:
-        return task_service.update_task_name(
+        return await task_service.update_task_name(
             task_id=task_id, name=name, user_id=user_id
         )
     except TaskNotFoundException as e:
@@ -50,6 +50,6 @@ async def delete_task(
     user_id: int = Depends(get_request_user_id),
 ):
     try:
-        return task_service.delete_task(task_id=task_id, user_id=user_id)
+        return await task_service.delete_task(task_id=task_id, user_id=user_id)
     except TaskNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.detail)

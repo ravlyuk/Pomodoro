@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: pomodoro
       TZ: Europe/Kyiv
-      PGTZ: Europe/Kyiv
+      PGTZ: Europe/Kyiv      
   cache:
     image: redis:alpine
     restart: always

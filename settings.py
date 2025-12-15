@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DB_PORT: str = "5432"
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "password"
-    DB_DRIVER: str = "postgresql+psycopg2"
+    DB_DRIVER: str = "postgresql+asyncpg"
     DB_NAME: str = "pomodoro"
 
     # Cache settings
@@ -20,10 +20,10 @@ class Settings(BaseSettings):
     JWT_ENCODE_ALGORITHM: str = "HS256"
 
     # OAuth2 settings
-    GOOGLE_CLIENT_ID: str
-    GOOGLE_SECRET_KEY: str
-    GOOGLE_REDIRECT_URI: str
-    GOOGLE_TOKEN_ID: str
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_SECRET_KEY: str = ""
+    GOOGLE_REDIRECT_URI: str = ""
+    GOOGLE_TOKEN_ID: str = ""
     GOOGLE_TOKEN_URL: str = "https://accounts.google.com/o/oauth2/token"
     GOOGLE_USER_INFO_URL: str = "https://www.googleapis.com/oauth2/v1/userinfo"
 

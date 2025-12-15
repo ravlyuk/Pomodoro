@@ -25,11 +25,11 @@ class AuthService:
     user_repository: UserRepository  # Replace 'any' with the actual UserRepository type
     google_client: GoogleClient
 
-    def google_auth(self, code: str) -> UserLoginSchema:
-        user_data = self.google_client.get_user_info(code=code)
+    async def google_auth(self, code: str) -> UserLoginSchema:
+        user_data = await self.google_client.get_user_info(code=code)
 
-        if user:= self.user_repository.get_user_by_email(email=user_data.email):
-            access_token = self.generate_access_token(user_id=user.id)
+        if user:= await self.user_repository.get_user_by_email(email=user_data.email):
+            access_token = await self.generate_access_token(user_id=user.id)
             print("user login - access_token", access_token)
             return UserLoginSchema(user_id=user.id, access_token=access_token)
 
@@ -39,24 +39,24 @@ class AuthService:
             name=user_data.name,
         )
 
-        created_user = self.user_repository.create_user(create_user_data)
-        access_token = self.generate_access_token(user_id=created_user.id)
+        created_user = await self.user_repository.create_user(create_user_data)
+        access_token = await self.generate_access_token(user_id=created_user.id)
         print("new user created - access_token", access_token)
         return UserLoginSchema(user_id=created_user.id, access_token=access_token)
 
     def get_google_redirect_url(self) -> str:
         return self.settings.google_redirect_url
 
-    def login(self, username: str, password: str) -> UserLoginSchema:
-        user = self.user_repository.get_user_by_username(username)
+    async def login(self, username: str, password: str) -> UserLoginSchema:
+        user = await self.user_repository.get_user_by_username(username)
         if not user:
             raise UserNotFoundException
-        self._validate_auth_user(user, password)
+        await self._validate_auth_user(user, password)
         access_token = self.generate_access_token(user_id=user.id)
         return UserLoginSchema(user_id=user.id, access_token=access_token)
 
     @staticmethod
-    def _validate_auth_user(user: UserProfileModel | None, password: str) -> None:
+    async def _validate_auth_user(user: UserProfileModel | None, password: str) -> None:
         if not user:
             raise UserNotFoundException
         if user.password != password:
