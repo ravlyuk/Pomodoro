@@ -14,6 +14,6 @@ async def create_user(
     user_service: UserService = Depends(get_user_service),
 ) -> UserLoginSchema:
     try:
-        return user_service.create_user(username=body.username, password=body.password)
+        return await user_service.create_user(username=body.username, password=body.password)
     except UserAlreadyExistsException as e:
         raise HTTPException(status_code=400, detail=e.detail)

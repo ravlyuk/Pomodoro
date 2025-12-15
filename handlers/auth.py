@@ -5,8 +5,7 @@ from fastapi.responses import RedirectResponse
 
 from dependency import get_auth_service
 from exceptions import UserNotCorrectPasswordException, UserNotFoundException
-from schema import UserLoginSchema
-from schema.user import UserCreateSchema
+from schema import UserLoginSchema, UserCreateSchema
 from service import AuthService
 
 
@@ -19,7 +18,7 @@ async def login(
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> UserLoginSchema:
     try:
-        return auth_service.login(body.username, body.password)
+        return await  auth_service.login(body.username, body.password)
     except UserNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.detail)
     except UserNotCorrectPasswordException as e:
@@ -40,4 +39,4 @@ async def google_auth(
     code: str,
     auth_service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> UserLoginSchema:
-    return auth_service.google_auth(code=code)
+    return await auth_service.google_auth(code=code)
