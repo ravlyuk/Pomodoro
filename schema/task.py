@@ -1,10 +1,11 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class TasksBaseSchema(BaseModel):
     name: str
     pomodoro_count: int
     category_id: int
+    user_id: int 
 
     class Config:
         from_attributes = True
@@ -17,4 +18,11 @@ class TasksBaseSchema(BaseModel):
 
 
 class TasksRetrieveSchema(TasksBaseSchema):
-    id: int
+    model_config = ConfigDict(from_attributes=True)
+    id: int | None = None
+
+
+class TasksCreateSchema(BaseModel):
+    name: str
+    pomodoro_count: int
+    category_id: int
