@@ -48,8 +48,10 @@ async def delete_task(
     task_id: int,
     task_service: Annotated[TaskService, Depends(get_task_service)],
     user_id: int = Depends(get_request_user_id),
-):
+) :
     try:
-        return await task_service.delete_task(task_id=task_id, user_id=user_id)
+        await task_service.delete_task(task_id=task_id, user_id=user_id)
+        return "success"
     except TaskNotFoundException as e:
         raise HTTPException(status_code=404, detail=e.detail)
+ 
