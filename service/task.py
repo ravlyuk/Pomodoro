@@ -41,5 +41,4 @@ class TaskService:
         task = await self.task_repository.get_user_task(user_id, task_id)
         if task is None:
             raise TaskNotFoundException
-
         await self.task_repository.delete_task(task_id=task_id, user_id=user_id)

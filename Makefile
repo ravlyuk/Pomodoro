@@ -1,10 +1,7 @@
 .DEFAULT_GOAL := help
 
-#run: ## Run the application using uvicorn with provided arguments or defaults
-#	poetry run gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker -c gunicorn.conf.py
- 
 run:
-	poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload 
+	poetry run gunicorn main:app -c infrastructure/gunicorn.conf.py --reload
 
 migrate:
 	alembic revision --autogenerate -m "$(m)"
