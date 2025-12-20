@@ -1,4 +1,4 @@
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select, update, insert
 from sqlalchemy.orm import Session
 
 
@@ -13,14 +13,15 @@ class TaskRepository:
     async def get_tasks(self) -> list[TasksModel]:
         async with self.db_session as session:
             tasks: list[TasksModel] = list(
-                session.execute(select(TasksModel)).scalars().all()
+                (await session.execute(select(TasksModel)))
+                .scalars().all()
             )
         return tasks
 
     async def get_task_by_id(self, task_id: int) -> TasksModel | None:
         query = select(TasksModel).where(TasksModel.id == task_id)
-        with self.db_session as session:
-            task = session.execute(query).scalar_one_or_none()
+        async with self.db_session as session:
+            task = (await session.execute(query)).scalar_one_or_none()
         return task
 
     async def create_task(self, task: TasksCreateSchema, user_id: int) -> TasksModel:
@@ -50,7 +51,7 @@ class TaskRepository:
             .join(CategoriesModel, TasksModel.category_id == CategoriesModel.id)
             .where(CategoriesModel.name == category_name)
         )
-        with self.db_session as session:
+        async with self.db_session as session:
             tasks: list[TasksModel] = list(session.execute(query).scalars().all())
         return tasks
 
