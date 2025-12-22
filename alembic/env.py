@@ -7,7 +7,7 @@ from alembic import context
 
 from models import *
 from database import Base
-from settings import Settings
+from app.settings import Settings
 
 settings = Settings()
 

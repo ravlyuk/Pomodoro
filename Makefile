@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 run:
-	poetry run gunicorn main:app -c infrastructure/gunicorn.conf.py --reload
+	poetry run gunicorn app.main:app -c gunicorn.conf.py --reload
 
 migrate:
 	alembic revision --autogenerate -m "$(m)"
