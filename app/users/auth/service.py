@@ -27,7 +27,7 @@ class AuthService:
         user_data = await self.google_client.get_user_info(code=code)
 
         if user := await self.user_repository.get_user_by_email(email=user_data.email):
-            access_token = await self.generate_access_token(user_id=user.id)
+            access_token = self.generate_access_token(user_id=user.id)
             print("user login - access_token", access_token)
             return UserLoginSchema(user_id=user.id, access_token=access_token)
 
@@ -38,7 +38,7 @@ class AuthService:
         )
 
         created_user = await self.user_repository.create_user(create_user_data)
-        access_token = await self.generate_access_token(user_id=created_user.id)
+        access_token = self.generate_access_token(user_id=created_user.id)
         print("new user created - access_token", access_token)
         return UserLoginSchema(user_id=created_user.id, access_token=access_token)
 
@@ -61,7 +61,8 @@ class AuthService:
             raise UserNotCorrectPasswordException
 
     def generate_access_token(self, user_id: str | None) -> str:
-        expires_date_unix = (dt.datetime.now() + dt.timedelta(days=7)).timestamp()
+        expires_date_unix = (dt.datetime.now(tz=dt.timezone.utc) + dt.timedelta(days=7)).timestamp()       
+
         token = jwt.encode(
             {"user_id": user_id, "expire": expires_date_unix},
             self.settings.JWT_SECRET_KEY,

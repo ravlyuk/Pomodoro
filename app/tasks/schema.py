@@ -2,13 +2,12 @@ from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class TasksBaseSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     name: str
     pomodoro_count: int
     category_id: int
     user_id: int
-
-    class Config:
-        from_attributes = True
 
     @model_validator(mode="after")
     def check_came_pomodoro_count_is_not_none(self):
